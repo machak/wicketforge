@@ -36,13 +36,14 @@ import java.util.List;
  */
 public abstract class WicketClassBaseAction extends CreateElementActionBase {
 
+    @SuppressWarnings("unchecked")
+    private static final SmartPsiElementPointer<PsiElement>[] SMART_PSI_ELEMENT_POINTERS = new SmartPsiElementPointer[0];
+
     protected WicketClassBaseAction(String text, String description) {
         super(text, description, Constants.WICKET_ICON);
     }
 
-    @Override
-    protected void checkBeforeCreate(String newName, PsiDirectory directory) throws IncorrectOperationException {
-    }
+
 
     @NotNull
     @Override
@@ -56,13 +57,13 @@ public abstract class WicketClassBaseAction extends CreateElementActionBase {
         private final Project project;
         private final PsiDirectory psiDirectory;
         private String templateName;
-        private SmartPsiElementPointer[] createdElements;
+        private SmartPsiElementPointer<PsiElement>[] createdElements;
 
         public ActionRunnableImpl(final Project project, final PsiDirectory directory, final String templateName) {
             this.project = project;
             this.psiDirectory = directory;
             this.templateName = templateName;
-            createdElements = new SmartPsiElementPointer[0];
+            createdElements = SMART_PSI_ELEMENT_POINTERS;
         }
 
         public boolean run(@NotNull final String inputString, @NotNull final String extendsClass, final boolean hasMarkup, @NotNull final PsiDirectory markupDirectory) {
@@ -115,6 +116,7 @@ public abstract class WicketClassBaseAction extends CreateElementActionBase {
                             }
                         });
 
+                        //noinspection unchecked
                         createdElements = new SmartPsiElementPointer[psiElements.length];
                         SmartPointerManager manager = SmartPointerManager.getInstance(project);
                         for (int i = 0; i < createdElements.length; i++) {
@@ -147,7 +149,7 @@ public abstract class WicketClassBaseAction extends CreateElementActionBase {
         @NotNull
         public final PsiElement[] getCreatedElements() {
             List<PsiElement> elts = new ArrayList<PsiElement>();
-            for (SmartPsiElementPointer pointer : createdElements) {
+            for (SmartPsiElementPointer<PsiElement> pointer : createdElements) {
                 final PsiElement elt = pointer.getElement();
                 if (elt != null) {
                     elts.add(elt);
